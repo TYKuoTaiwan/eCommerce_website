@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Team 3 Demo</title>
+    <link href="/css/cover.css" type="text/css" rel="stylesheet">
+    <script language="javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script>
+	function addRow()
+	{
+	  
+	 var table = document.getElementById(infoTable);
+	 //alert("inside function" +table.rows.length);
+	 //var rowCount = table.rows.length;
+	 //alert("inside function" +rowCount);
+     var row = table.insertRow(0);
+     var cell1 = row.insertCell(0);
+	 cell1.innerHTML = cell1.innerHTML +' <input type="text" size="20" name="attrName[]"/> '
+	 //var cell2 = row.insertCell(1);
+	 //cell2.innerHTML = cell2.innerHTML +' <input type="text" size="20" name="attrVal[]"/> '
+		alert("rows added");
+	}
+	
+	
+	
+	
+	
+	</script>
+</head>
+<body>
+  <form action = "/productattr" method = post>
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+        
+        <div class="inner cover">	
+		  
+		  
+<table id="infoTable">
+            <tr>
+                <td><label for="ProdID">Product ID:</label></td>
+                <td><input type="text" name="ProdID" id="ProdID"></td>
+            </tr>
+            <tr>
+                <td><label for="password">SKU:</label></td>
+                <td><input type="text" name="sku" id="sku"></td>
+            </tr>
+            <tr>
+                <td><label for="qty">Quantity:</label></td>
+                <td><input type="text" name="qty" id="qty"></td>
+            </tr>
+			<tr>
+			<td><label for="Attributes">Product Attributes</label></td>
+			<td> <input type="button" name="addAttr" value="Add Attributes & Values" onclick="addRow()"/> </td>
+			</tr>
+			
+			  <tr>
+        
+                <td><input type="text" name="attr1"></td>
+				<td><input type="text" name="Val1"></td>
+            </tr>
+			<tr>
+                <td><label for="lastname">Image:</label></td>
+                <td><input type="file" name="pic" accept="image/*"></td>
+            </tr>			
+			<tr>
+			<td> <input type="submit" name="submit" value="Add Product"/> 
+			<td>
+			</tr>
+			
+			
+
+</table>
+
+
+
+
+
+</p>
+
+</div>
+
+</div>
+</div>
+</div>
+</div>
+</div>
+</form>
+</body>
+</html> 
