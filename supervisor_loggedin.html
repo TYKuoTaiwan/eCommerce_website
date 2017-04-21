@@ -1,99 +1,115 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="../../favicon.ico">
+<html>
 
-    <title>Happy Shopping !! </title>
+<head>
+	<title>Big store a Ecommerce Online Shopping Category Flat Bootstrap Responsive Website Template| Home :: w3layouts</title>
+	<!-- for-mobile-apps -->
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta property="og:title" content="Vide" />
+	<meta name="keywords" content="Big store Responsive web template, Bootstrap Web Templates, Flat Web Templates, Android Compatible web template, Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design" />
+	<script type="application/x-javascript"> addEventListener("load", function() { setTimeout(hideURLbar, 0); }, false);
+	function hideURLbar(){ window.scrollTo(0,1); } </script>
+	<!-- //for-mobile-apps -->
+	<link href="css/bootstrap.css" rel='stylesheet' type='text/css' />
+	<!-- Custom Theme files -->
+	<link href="css/style.css" rel='stylesheet' type='text/css' />
+	<!-- js -->
+	<script src="js/jquery-1.11.1.min.js"></script>
+	<!-- //js -->
+	<!-- start-smoth-scrolling -->
+	<script type="text/javascript" src="js/move-top.js"></script>
+	<script type="text/javascript" src="js/easing.js"></script>
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			$(".scroll").click(function(event){		
+				event.preventDefault();
+				$('html,body').animate({scrollTop:$(this.hash).offset().top},1000);
+			});
+		});
+	</script>
+	<!-- start-smoth-scrolling -->
+	<link href="css/font-awesome.css" rel="stylesheet"> 
+	<link href='//fonts.googleapis.com/css?family=Montserrat:400,700' rel='stylesheet' type='text/css'>
+	<link href='//fonts.googleapis.com/css?family=Noto+Sans:400,700' rel='stylesheet' type='text/css'>
+	<!--- start-rate---->
+	<script src="js/jstarbox.js"></script>
+	<link rel="stylesheet" href="css/jstarbox.css" type="text/css" media="screen" charset="utf-8" />
+	<script type="text/javascript">
+		jQuery(function() {
+		jQuery('.starbox').each(function() {
+			var starbox = jQuery(this);
+				starbox.starbox({
+				average: starbox.attr('data-start-value'),
+				changeable: starbox.hasClass('unchangeable') ? false : starbox.hasClass('clickonce') ? 'once' : true,
+				ghosting: starbox.hasClass('ghosting'),
+				autoUpdateAverage: starbox.hasClass('autoupdate'),
+				buttons: starbox.hasClass('smooth') ? false : starbox.attr('data-button-count') || 5,
+				stars: starbox.attr('data-star-count') || 5
+				}).bind('starbox-value-changed', function(event, value) {
+				if(starbox.hasClass('random')) {
+				var val = Math.random();
+				starbox.next().text(' '+val);
+				return val;
+				} 
+			})
+		});
+	});
+	</script>
+	<!---//End-rate---->
+</head>
 
-    <!-- Custom styles for this template -->
-    <link href="/css/cover.css" type="text/css" rel="stylesheet">
-    <style> 
-    input[type=text] {
-    width: 250px;
-    box-sizing: border-box;
-    border: 2px solid #ccc;
-    border-radius: 4px;
-    font-size: 16px;
-    background-color: white;
-    background-image: url('searchicon.png');
-    background-position: 10px 10px; 
-    background-repeat: no-repeat;
-    padding: 12px 20px 12px 40px;
-    -webkit-transition: width 0.4s ease-in-out;
-    transition: width 0.4s ease-in-out;
-    }
+<body>
+	<div class="header">			
+			<div class="logo">
+				<h1 ><a href="index.html">Big Store<span>The Best Supermarket</span></a></h1>
+			</div>
+			<div class="head-t">
+				<ul class="card">
+					<li><a href="/home" ><i class="fa fa-user" aria-hidden="true"></i>Logout</a></li>
+					<li><a href="/update" ><i class="fa fa-arrow-right" aria-hidden="true"></i>Profile</a></li>
+				</ul>	
+			</div>
 
-input[type=text]:focus {
-    width: 100%;
-}
-</style>
-<script>
-function getUserName()
-{
-alert("function");
-var user= {{sess.username}};
-var uname = 
-var display = "welcome "+user;
-document.getElementById("welcome").innerHTML = display;
-}
-</script>
-  </head>
+			<div class="nav-top">
+				<nav class="navbar navbar-default">
+				<div class="navbar-header nav_2">
+					<button type="button" class="navbar-toggle collapsed navbar-toggle1" data-toggle="collapse" data-target="#bs-megadropdown-tabs">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div> 
+			</div>
+	</div>
 
-  <body onload= "getUserName()">
-  <form action = "/supervisor_loggedin" method = get>
+	<div class="nav">
+				<div class=" con-w3l wthree-of">
+					<form action = "/supervisor_loggedin" method = get>
+						<h1>
+							<div class="col-md-3 pro-1">
+								<a href="/addproducts"><span class="label label-warning">Add Products</span></a>
+							</div>
 
-     <table align ="center">   
- <tr> 
- <td> <img align="left" src="/images/icon.jpg" style="width:90px;height:80px" ;>   </td>
- <td> <h2>Just Click </h2> <h4> <i> - Shop as simple as that </i> </h4> </td> 
- 
-    </tr> </table>
-            <p  id ="welcome" >  <h3  class="masthead-brand">   </h3> </p>
-              <nav>
-               <!-- <ul class="nav masthead-nav"> -->
-				<ul class="main-navigation" >
-				  <li><a href="/addproducts">Add Products</a></li>
-                  <li><a href="/updateprice">Update Price</a></li>
-				  <li><a href="/manageqty">Manage Stock</a></li>
-				  <li><a href="/viewOrders">View Orders</a></li>
-				  <li><a href="/updateShipments">Set Ship Status</a></li>	
-				  <li><a href="/home">Logout</a></li>				  
-				</ul>
-              </nav>
-		
-            </div>
-          </div>
-	
-	
-	
-          <div class="inner cover">
-	   <div class="center">
-            <h3 class="cover-heading">Online Shopping</h3>
-	    <input type="text" name="search" placeholder="Search products....."></input>
-            <p class="lead"> Site Under Consturction....</p>
-            
-              
-            </p>
-          </div> </div>
+							<div class="col-md-3 pro-1">
+								<a href="/updateprice"><span class="label label-warning">Update Price</span></a>
+							</div>
 
-          <div class="mastfoot">
-            <div class="inner">
-              <p> site by team#3.</p>
-            </div>
-          </div>
+							<div class="col-md-3 pro-1">
+								<a href="/manageqty"><span class="label label-warning">Manage Stock</span></a>
+							</div>
 
-        </div>
+							<div class="col-md-3 pro-1">
+								<a href="/viewOrders"><span class="label label-warning">View Orders</span></a>
+							</div>
 
-      </div>
-
-    </div>
-
-    </form>
-  </body>
+							<div class="col-md-3 pro-1">
+								<a href="/updateShipments"><span class="label label-warning">Set Ship Status</span></a>
+							</div>
+				        </h1>
+		            </form>	
+	        	</div>
+	</div>
+</body>
 </html>

@@ -46,6 +46,7 @@ var mysql = mysql.createConnection({
 
 
 app.use(express.bodyParser());
+app.use('/',  express.static(__dirname + '/'));
 app.use(express.static(__dirname + '/public'));
 app.use(express.cookieParser());
 app.use(session({cookieName: 'session',secret: 'ssshhhhh', saveUninitialized: true, resave: true}));	
@@ -60,32 +61,31 @@ var tset_string2;
 var connectCounter = 0;
 var value_setter = 0;
 
+
+
 app.get("/home",function(req,res){
 	sess = req.session;
     res.sendfile("./home.html");
     console.log("Process ID "+process.pid+" on port:"+server.address().port);   // to proove load balancing[shashank]
 	
 	app.get("/Shirts",function(req,res){
-        console.log("user id to cart" +user_id +sess.user_id);
-        mysql.query('select a.SKU, b.Product_ID, a.Name, a.Price, b.Available_Qty, c.Attr_Name, c.Attr_Value from catalog a, product b, product_attribute c where a.sku=b.sku and b.product_id=c.product_id;', function(err, rows, fields)
-        {       
-		    if (err)
-                throw err;
-	        else
-            {
-		        console.log('no of records is '+rows.length);
-                JSON.stringify(rows);
-				var htmlStr="";
-				for(i=0;i<rows.length;i++)
-				{
-					htmlStr+="<tr> <td> <input type='checkbox' name='addToCartCheck' value='" +rows[i].Product_ID +"'/> </td> <td>"  +rows[i].Product_ID +"</td> <td>"  + rows[i].Name + "</td> <td>" +rows[i].Price +"$" + "</td> <td> " +rows[i].Available_Qty +   "</td> <td> " +rows[i].Attr_Name +   "</td> <td> " +rows[i].Attr_Value +  " </td> <td> <input type='text' name='purchaseQty' /> <td> </td></tr>";
-					console.log(rows[i].Name);
-                }
-				res.writeHead(200, {"Content-Type": "text/html"});  
-				res.write("<html> <head>  <link href='/css/cover.css' type='text/css' rel='stylesheet'> </head><body> <form  action ='/addProductsToCart' method= post> <table border='1'> <tr> <th> Select Product </th> <th> Product ID </th> <th> Product Name </th> <th> Price </th> <th> Available_Qty </th> <th> Attr_Name </th> <th> Attr_Value </th> <th> Purchase Quantity </th></tr>" +htmlStr +"<tr> <td colspan='8'> <input type='submit' name='add to cart' value='Add To Cart'/> </td> </tr> </table></form> </body> </html>"); 
-				res.end(); 
-            } 
-	    });
+
+		res.sendfile("./shirts.html");
+       
+	    app.get("/shirtsLoad",function(req,res){
+	        console.log("user id to cart" +user_id +sess.user_id);
+	        mysql.query('select a.SKU, b.Product_ID, a.Name, a.Price, b.Available_Qty, c.Attr_Name, c.Attr_Value from catalog a, product b, product_attribute c where a.sku=b.sku and b.product_id=c.product_id;', function(err, rows, fields)
+	        {       
+			    if (err)
+	                throw err;
+		        else
+	            {
+	            	res.type('text/plain');
+					res.json(rows);
+			        res.end(); 
+	            } 
+			});
+		});
 		
 	    app.post("/addProductsToCart",function(req,res){
 		    var checked=req.body.addToCartCheck;
@@ -146,145 +146,147 @@ app.get("/home",function(req,res){
     }); //app.get("/shirts") ends here
 	
 	app.get("/displayCart",function(req,res){ 
-	    mysql.query('SELECT * FROM cart where uid = ? ' , [user_id], function(err,rows)
-        {
-            if (err)
-                throw err;
-	        else
-            {
-			    console.log('no of products in cart '+rows.length);
-                JSON.stringify(rows);
-				var htmlStr="";
-				for(i=0;i<rows.length;i++)
-				{
-				    htmlStr+="<tr>  <td>"  + rows[i].Product_Id + "</td> <td>" +rows[i].QTY + "</td> <td> " +rows[i].Tot_Price +"$" +   "</td> </tr>";	
-					console.log(rows[i].Product_Id);				
-				}
-				res.writeHead(200, {"Content-Type": "text/html"});  
-				res.write("<html> <head>  <link href='/css/cover.css' type='text/css' rel='stylesheet'> </head><body> <form  action ='/proceedToCheckout' method= post> <table border='1'> <tr> <th> Product ID </th> <th> Qty </th>  <th> Total Price </th> </tr>" +htmlStr +"<tr> <td colspan='3'> <input type='submit' name='proceed to checkout' value='Proceed to Checkout'/> </td> </tr> </table></form> </body> </html>"); 
-				res.end();
-		    }
-	    });  // results of displaying cart done 
+
+		res.sendfile("./displayCart.html");
+       
+	    app.get("/displayCartLoad",function(req,res){
+	        mysql.query('SELECT * FROM cart where uid = ? ' , [user_id], function(err,rows){
+	            if (err)
+	                throw err;
+		        else
+	            {
+				    console.log('no of products in cart '+rows.length);
+				    res.type('text/plain');
+					res.json(rows);
+	                res.end();
+			    }
+	    	});  
+		});// results of displaying cart done 
 	 
-	    app.post("/proceedToCheckout" , function(req,res){
-	        mysql.query('SELECT * FROM address where uid = ? ' , [user_id], function(err,rows)
-            {
-                if (err)
-                    throw err;
-	            else
-                {
-			        console.log('no of adress for the user '+rows.length);
-                    JSON.stringify(rows);
-				    var htmlStr="";
-				    for(i=0;i<rows.length;i++)
-				    {
-					    htmlStr+="<tr> <td>  <input type='radio' name='addr_id_radio' value='"+rows[i].addr_id +"'</td> <td>"  + rows[i].Addr_line1 + "</td> <td>" +rows[i].Addr_line2 + "</td> <td> " +rows[i].state + "</td> <td> " +rows[i].zip_code  + "</td> </tr>";	
-					    console.log(rows[i].addr_id);			
-				    }
-					res.writeHead(200, {"Content-Type": "text/html"});  
-				    res.write("<html> <head>  <link href='/css/cover.css' type='text/css' rel='stylesheet'> </head><body> <form  action ='/proceedToPayment' method= post> <table border='1'> <tr> <th> select </th> <th> addr line 1 </th>  <th> addr line 1Price </th> <th> state </th> <th> zip code </th>  </tr>" +htmlStr +"<tr> <td colspan='5'> <input type='submit' name='proceed to payment' value='Proceed to Payment'/> </td> </tr> </table></form> </body> </html>"); 
-				    res.end();
-		        }
-	        });	//available addresses displayed
+	    app.get("/proceedToCheckout" , function(req,res){
+
+	    	res.sendfile("./proceedToCheckout.html");
+
+	    	app.get("/proceedToCheckout",function(req,res){
+		        mysql.query('SELECT * FROM address where uid = ? ' , [user_id], function(err,rows)
+            	{
+	                if (err)
+	                    throw err;
+		            else
+	                {
+				        console.log('no of adress for the user '+rows.length);
+				        res.type('text/plain');
+						res.json(rows);
+	                    res.end();
+			        }
+	        	});	//available addresses displayed 
+			});
+	        
 	    });
 
 	    app.post("/proceedToPayment" , function(req,res){
-	        var addr_selected=req.body.addr_id_radio;
-	        console.log("selected address" +addr_selected);
+			var addr_selected=req.body.addr_id_radio;
+			console.log("selected address" +addr_selected);
 	        var order_amount;
 	        var order_id;
 	        var state_tax;
 	        var amount_payable;
 	        var bill_no;
-			mysql.query("select sum(tot_price)as amount from cart where UID = ?", [user_id], function(err, result, fields)
-			{
-			    if (err)		
-				    throw err;
-				else
-				{					
-					order_amount = eval(result[0].amount);
-					console.log("result" +order_amount);
-			        var order={
-					    UID: user_id,
-					    Purchase_Amt : order_amount, 
-					    Delivery_Addr_ID : addr_selected,
-					    Order_Status : "initiated",
-					    Return_Flag : "no"
-					}; 
-			        mysql.query("Insert into order (UID,Order_Date,Purchase_Amt,Delivery_Addr_ID,Order_Status,Return_Flag) VALUES ('"+order.UID+"', NOW(),'"+order.Purchase_Amt+"','"+order.Delivery_Addr_ID+"','"+order.Order_Status+"','"+order.Return_Flag+"') ; ",function(err, result)
-				    {
-					    if (err)
-						    throw err;
-				        else
-				        {
-					        console.log("insert into order success");
-				            var default_status = "initiated";	
-				            mysql.query("select Order_ID from order where UID = ? and Order_Status = ?", [user_id,default_status], function(err, result, fields)
-					        {
-					            if (err)
-						            throw err;
-					            else
-					            {
-					                order_id = result[0].Order_ID
-					                console.log("order_id" +order_id);
-					                mysql.query("insert into line_items (Order_ID, Seq_num, Product_ID, QTY, Price) select Order_ID , @n:=@n+1 as seq_num , product_id , qty, Tot_Price from (select product_id , qty, Tot_Price from cart where UID = ?) a ,(SELECT @n:=0) b , (select Order_ID from ecommerce_project.order where Order_ID=?) c ; ", [user_id,order_id], function(err, result, fields)
-					                {
-					                    if (err)
-						                    throw err;
-					                    else
-					                    {
-						                    console.log("insert into line items success");
-						                    mysql.query("select Tax_Percent from Tax_Info where State_Code = (select state from address where addr_id = ?)", [addr_selected], function(err, result, fields)
-					                        {
-					                            if (err)
-						                            throw err;
-					                            else
-					                            {
-						                            state_tax=result[0].Tax_Percent;
-						                            console.log("state_tax" +state_tax);
-						                            var tax_amount = eval(order_amount*state_tax/100);
-						                            amount_payable = eval(order_amount + tax_amount);
-						                            console.log("amount_payable" +amount_payable);
-					                                var bill={
-					                                    Order_ID : order_id, 
-					                                    Purchase_Amt : order_amount,
-					                                    Taxable_Amt : tax_amount,
-					                                    Payable_Amount: amount_payable
-					                                }; 
-					                                mysql.query("Insert into bill (Order_ID,Purchase_Amt,Taxable_Amt,Payable_Amount) VALUES ('"+bill.Order_ID+"','"+bill.Purchase_Amt+"','"+bill.Taxable_Amt+"','"+bill.Payable_Amount+"') ; ",function(err, result)
-					                                {
-					                                    if (err)
-						                                    throw err;
-					                                    else
-					                                    {
-					                                        console.log("insertion into bill success");	
-					                                    }
-					                                    mysql.query('SELECT * FROM bill where Order_ID = ? ' , [order_id], function(err,rows)
-					                                    {
-					                                        if (err)
-					                                            throw err;
-					                                        else
-					                                        {
-                                            					bill_no=rows[0].Bill_no;
-					                                            var htmlStr="";
-					                                            htmlStr="<tr> <td> "  +rows[0].Bill_no + "</td> <td>" +rows[0].Order_ID + "</td> <td> " +rows[0].Purchase_Amt + "</td> <td> " +rows[0].Taxable_Amt  + "</td> <td> " +rows[0].Payable_Amount + "</td> </tr>";
-					                                            res.writeHead(200, {"Content-Type": "text/html"}); 					
-					                                            res.write("<html> <head> <link href='/css/cover.css' type='text/css' rel='stylesheet'> </head><body> <form  action ='/confirmPayment' method= post> <table border='1'> <tr> <th> Bill no </th> <th> Order ID</th>  <th> Purchase Amount </th> <th> Tax Amount </th> <th> Payable Amount </th>  </tr>" +htmlStr +"<tr> <td> <select name='paymentMode' > <option value='CreditCard'>Credit Card</option><option value='COD'>Cash On Delivery</option></select></td><td colspan='5'> <input type='submit' name='confirm_payment' value='Confirm Payment'/> </td> </tr> </table></form> </body> </html>"); 
-					                                            res.end();
-					                                        }
-					                                    });	
-					
-					                                });
-					                            }
-					                        });
-					                    }
-					                });
-					            }
-				            });
-				        }
-				    });
-				}	
-			});
+
+	    	res.sendfile("./proceedToPayment.html");
+
+	    	app.get("/proceedToPaymentLoad",function(req,res){
+	    					mysql.query("select sum(tot_price)as amount from cart where UID = ?", [user_id], function(err, result, fields)
+	    					{
+	    					    if (err)		
+	    						    throw err;
+	    						else
+	    						{					
+	    							order_amount = eval(result[0].amount);
+	    							console.log("result" +order_amount);
+	    					        var order={
+	    							    UID: user_id,
+	    							    Purchase_Amt : order_amount, 
+	    							    Delivery_Addr_ID : addr_selected,
+	    							    Order_Status : "initiated",
+	    							    Return_Flag : "no"
+	    							}; 
+	    					        mysql.query("Insert into order (UID,Order_Date,Purchase_Amt,Delivery_Addr_ID,Order_Status,Return_Flag) VALUES ('"+order.UID+"', NOW(),'"+order.Purchase_Amt+"','"+order.Delivery_Addr_ID+"','"+order.Order_Status+"','"+order.Return_Flag+"') ; ",function(err, result)
+	    						    {
+	    							    if (err)
+	    								    throw err;
+	    						        else
+	    						        {
+	    							        console.log("insert into order success");
+	    						            var default_status = "initiated";	
+	    						            mysql.query("select Order_ID from order where UID = ? and Order_Status = ?", [user_id,default_status], function(err, result, fields)
+	    							        {
+	    							            if (err)
+	    								            throw err;
+	    							            else
+	    							            {
+	    							                order_id = result[0].Order_ID
+	    							                console.log("order_id" +order_id);
+	    							                mysql.query("insert into line_items (Order_ID, Seq_num, Product_ID, QTY, Price) select Order_ID , @n:=@n+1 as seq_num , product_id , qty, Tot_Price from (select product_id , qty, Tot_Price from cart where UID = ?) a ,(SELECT @n:=0) b , (select Order_ID from ecommerce_project.order where Order_ID=?) c ; ", [user_id,order_id], function(err, result, fields)
+	    							                {
+	    							                    if (err)
+	    								                    throw err;
+	    							                    else
+	    							                    {
+	    								                    console.log("insert into line items success");
+	    								                    mysql.query("select Tax_Percent from Tax_Info where State_Code = (select state from address where addr_id = ?)", [addr_selected], function(err, result, fields)
+	    							                        {
+	    							                            if (err)
+	    								                            throw err;
+	    							                            else
+	    							                            {
+	    								                            state_tax=result[0].Tax_Percent;
+	    								                            console.log("state_tax" +state_tax);
+	    								                            var tax_amount = eval(order_amount*state_tax/100);
+	    								                            amount_payable = eval(order_amount + tax_amount);
+	    								                            console.log("amount_payable" +amount_payable);
+	    							                                var bill={
+	    							                                    Order_ID : order_id, 
+	    							                                    Purchase_Amt : order_amount,
+	    							                                    Taxable_Amt : tax_amount,
+	    							                                    Payable_Amount: amount_payable
+	    							                                }; 
+	    							                                mysql.query("Insert into bill (Order_ID,Purchase_Amt,Taxable_Amt,Payable_Amount) VALUES ('"+bill.Order_ID+"','"+bill.Purchase_Amt+"','"+bill.Taxable_Amt+"','"+bill.Payable_Amount+"') ; ",function(err, result)
+	    							                                {
+	    							                                    if (err)
+	    								                                    throw err;
+	    							                                    else
+	    							                                    {
+	    							                                        console.log("insertion into bill success");	
+	    							                                    }
+	    							                                    mysql.query('SELECT * FROM bill where Order_ID = ? ' , [order_id], function(err,rows)
+	    							                                    {
+	    							                                        if (err)
+	    							                                            throw err;
+	    							                                        else
+	    							                                        {
+	    							                                        	res.type('text/plain');
+	    							                                        	res.json(rows);
+	    		                                            					res.end();
+	    							                                        }
+	    							                                    });	
+	    							
+	    							                                });
+	    							                            }
+	    							                        });
+	    							                    }
+	    							                });
+	    							            }
+	    						            });
+	    						        }
+	    						    });
+	    						}	
+	    					});
+			});// results of displaying proceedToPayment done
+
+	        
+	        
+			
 							
 	        app.post("/confirmPayment" , function(req,res){
 	            var PayMode = req.body.paymentMode;
@@ -294,6 +296,7 @@ app.get("/home",function(req,res){
 					Payment_Mode : PayMode
 				}; 
 				var order_status = "Ordered";
+
 				mysql.query("Insert into Payment (Bill_no,Payable_Amount,Payment_Mode,Payment_Date) VALUES ('"+payment.Bill_no+"','"+payment.Payable_Amount+"','"+payment.Payment_Mode+"',NOW()) ; ",function(err, result)
 				{
 					if (err)
@@ -331,9 +334,9 @@ app.get("/home",function(req,res){
 						});
 					}
 			    });
-	        });
+	        });// results of displaying confirmPayment done
 	    });
-	});
+	});//app.get("/displayCart") ends here
 	
 	app.get("/form",function(req,res){
 	    res.sendfile("./form.html");  
@@ -440,25 +443,23 @@ app.get("/home",function(req,res){
     app.get("/customer_loggedin",function(req,res){
 	    res.sendfile("./customer_loggedin.html");
  	    app.get("/userOrderHistory",function(req,res){
-            mysql.query('select b.Order_ID, b.Seq_num, b.Product_ID, b.QTY, b.Price, a.order_date, a.Order_Status ,a.Return_Flag from ecommerce_project.order a, line_items b where (a.Order_ID=b.Order_ID) and (a.Return_Flag="NO") and (a.UID=?)',[user_id], function(err, rows, fields)
-		{
-            if (err)
-                throw err;
-            else
-            {
-                console.log('no of records is '+rows.length);
-                JSON.stringify(rows);
-                var htmlStr="";
-                for(i=0;i<rows.length;i++)
-                {
-                    htmlStr+="<tr> <td> <input type='checkbox' name='returnItems' value='" +rows[i].Order_ID +"'/> </td> <td>"  +rows[i].Order_ID +"</td> <td>"  + rows[i].Seq_num + "</td> <td>" +rows[i].Product_ID + "</td> <td> " +rows[i].Qty +   "</td> <td> " +rows[i].Price +   "</td> <td> " +rows[i].order_date + "</td> <td> " +rows[i].Order_Status +"</td> <td> " +rows[i].Return_Flag + " </td> </tr>";
-                    console.log(rows[i].Product_ID);
-                }
-                res.writeHead(200, {"Content-Type": "text/html"});
-                res.write("<html> <head>  <link href='/css/cover.css' type='text/css' rel='stylesheet'> </head><body> <form  action ='/customerReturns' method= post> <table border='1'> <tr> <th> Select Order </th> <th> Order ID </th> <th> Seq Number </th> <th> Product ID </th> <th> Qty </th> <th> Total Price </th> <th> Oder Date </th> <th> Order Status </th> <th> Return Flag </th></tr>" +htmlStr +"<tr> <td colspan='9'> <input type='submit' name='returnItem' value='Return Items'/> </td> </tr> </table></form> </body> </html>");
-                res.end();
-            }
-        });
+ 	    	res.sendfile("./userOrderHistory.html");
+
+ 	    	app.get("/userOrderHistoryLoad",function(req,res){
+ 	    	                    mysql.query('select b.Order_ID, b.Seq_num, b.Product_ID, b.QTY, b.Price, a.order_date, a.Order_Status ,a.Return_Flag from ecommerce_project.order a, line_items b where (a.Order_ID=b.Order_ID) and (a.Return_Flag="NO") and (a.UID=?)',[user_id], function(err, rows, fields)
+ 	    	        			{
+ 	    	        	            if (err)
+ 	    	        	                throw err;
+ 	    	        	            else
+ 	    	        	            {
+ 	    	        	                console.log('no of records is '+rows.length);
+ 	    	        	                res.type('text/plain');
+										res.json(rows);
+ 	    	        	                res.end();
+ 	    	        	            }
+ 	    	        	        }); 
+ 	    	});// results of displaying cart done 
+
 	        app.post("/customerReturns" , function(req,res)
 	        {
                 var checked=req.body.returnItems;
@@ -495,59 +496,63 @@ app.get("/home",function(req,res){
 	        res.sendfile("./update.html"); 
         });
 
+        app.get('/profileLoad', function(req, res) {
+        	 connection.query("select * from customer inner join (address inner join user_entry on address.uid = user_entry.uid) on customer.uid = address.uid where customer.uid=" + user_id + ";", function(err, rows, fields) {
+        	   	if (!err){
+        		   	res.type('text/plain');
+        			res.json(rows);
+            	}
+           		else
+             		console.log('Error while performing Query.');
+         	});	
+        });
+
         app.get("/home",function(req,res){
 	        res.sendfile("./home.html");
         });
 		app.get("/subscribe", function (req, res){ 
-        //res.sendfile("./subscribe_product.html");
-		
-		mysql.query('SELECT * FROM address where uid = ? ' , [user_id], function(err,rows)
-            {
-                if (err)
-                    throw err;
-	            else
-                {
-			        console.log('no of adress for the user '+rows.length);
-                    JSON.stringify(rows);
-				    var htmlStr="";
-				    for(i=0;i<rows.length;i++)
-				    {
-					    htmlStr+="<tr> <td>  <input type='radio' name='addr_id_radio' value='"+rows[i].addr_id +"'</td> <td>"  + rows[i].Addr_line1 + "</td> <td>" +rows[i].Addr_line2 + "</td> <td> " +rows[i].state + "</td> <td> " +rows[i].zip_code  + "</td> </tr>";	
-					    console.log(rows[i].addr_id);			
-				    }
-					res.writeHead(200, {"Content-Type": "text/html"});  
-				    res.write("<html> <head>  <link href='/css/cover.css' type='text/css' rel='stylesheet'> </head><body> <form  action ='/subscribe' method= post> <table border='1'> <tr> <th> Select Address </th> <th> addr line 1 </th>  <th> addr line 2 </th> <th> state </th> <th> zip code </th>  </tr>" +htmlStr +"  <tr><td td colspan = '2'><label for='Product_ID'>Product_ID:</label></td> <td td colspan = '3'><input type='text' name='productid' id='productid'></td> </tr> <tr><td td colspan = '2'><label for='qty'>Quantity:</label></td> <td td colspan = '3'><input type='text' name='qty' id='qty'></td> </tr><tr> <td colspan = '2'><label for='freq'>Frequency in Days:</label></td> <td colspan = '3'><input type='Text' name='Frequency' id='Frequency'></td> </tr> <tr><td colspan = '5'> <input type='submit' name='submit' value='Subscribe'/> <td></tr> </table></form> </body> </html>"); 
-				    res.end();
-		        }
-	        });
-		
-    });
+        	res.sendfile("./subscribe.html");
+			
+			app.get("/subscribeLoad",function(req,res){
+				        mysql.query('SELECT * FROM address where uid = ? ' , [user_id], function(err,rows){
+				            if (err)
+				                throw err;
+					        else
+				            {
+							    console.log('no of adress for the user '+rows.length);
+							    res.type('text/plain');
+								res.json(rows);
+				                res.end();
+						    }
+				    	});  
+					});// results of displaying subscribe done 
+    	});
 	
 		app.post("/subscribe", function (req, res){ 
 		
-		var sub_date = new Date();
-		var freq = req.body.Frequency; 
-		var product_id = req.body.productid; 
-		var sku = (product_id+"").slice(0,-4);
-		var sub_qty = req.body.qty; 
-		var sub_addr_id = req.body.addr_id_radio; 
-		console.log("sliced SKU" +sku + "qty" +sub_qty + "addr" +sub_addr_id );
+			var sub_date = new Date();
+			var freq = req.body.Frequency; 
+			var product_id = req.body.productid; 
+			var sku = (product_id+"").slice(0,-4);
+			var sub_qty = req.body.qty; 
+			var sub_addr_id = req.body.addr_id_radio; 
+			console.log("sliced SKU" +sku + "qty" +sub_qty + "addr" +sub_addr_id );
+			
+			//sub_date.addDays(freq);
+			//sub_date.setDate(sub_date.getDate() + freq);
+			var new_date = new Date(sub_date.setTime( sub_date.getTime() + freq * 86400000 ));
+			var day=format(new_date, "yyyy-mm-dd h:MM:ss");
+			console.log(" date addition " +day);
+			var now = format( new Date(), "yyyy-mm-dd"); 
 		
-		//sub_date.addDays(freq);
-		//sub_date.setDate(sub_date.getDate() + freq);
-		var new_date = new Date(sub_date.setTime( sub_date.getTime() + freq * 86400000 ));
-		var day=format(new_date, "yyyy-mm-dd h:MM:ss");
-		console.log(" date addition " +day);
-		var now = format( new Date(), "yyyy-mm-dd"); 
-		
-        var template= {
-		    UID: user_id,
-			product_id : req.body.productid,
-			qty : sub_qty,
-		    Frequency: req.body.Frequency,		   
-		    Next_Order_Date : day,
-			addr_id : sub_addr_id 
-			}; 
+        	var template= {
+			    UID: user_id,
+				product_id : req.body.productid,
+				qty : sub_qty,
+			    Frequency: req.body.Frequency,		   
+			    Next_Order_Date : day,
+				addr_id : sub_addr_id 
+				}; 
 			
 			
 	        mysql.query("Insert into subscription_template (UID,Subscribed_Date,Frequency,product_id,qty,Next_Order_Date,addr_id) VALUES ('"+template.UID+"',NOW(),'"+template.Frequency+"','"+template.product_id+"','"+template.qty+"','"+template.Next_Order_Date+"', '"+template.addr_id+"' ) ; ",function(err, result)
@@ -559,32 +564,34 @@ app.get("/home",function(req,res){
 		            console.log("insert into subscription successful");
 					
 		            res.send('insert to subscription_template success.');
-	            }
-			
-			
-			
-	        });  
-    });
+	            }});  
+    	});
 	
-		
     });
 
     app.get("/supervisor_loggedin",function(req,res){
 	    res.sendfile("./supervisor_loggedin.html"); 
 	
 	    app.get("/addproducts",function(req,res){
-	        res.sendfile("./addproducts.html"); 
+	        res.sendfile("./productList.html");
+
+	        app.get('/productLoad',function(req,res){
+	        	connection.query("SELECT * from  catalog;", function(err, rows, fields) {
+	        	   	if (!err){
+	        	   		var objs = [];
+	        	   		for (var i = 0;i < rows.length; i++) {
+	        	   		    objs.push({product_name:rows[i].Name,SKU:rows[i].SKU,Price:rows[i].Price,Vendor_ID:rows[i].Vendor_ID});
+	        	   		}
+	        	   		res.end(JSON.stringify(objs));
+	            	}
+	           		else
+	             		console.log('Error while performing Query.123');
+	         	});	
+	        })
+
         });
-        
-        app.get("/updateprice", function (req, res){
-	        res.sendfile("./updateprice.html"); 
-        });
-        
-        app.get("/manageqty", function (req, res){
-	        res.sendfile("./manageqty.html"); 
-        }); 
-		
-	    app.post("/addproducts" , function(req,res)	
+
+        app.post("/addproducts" , function(req,res)	
 	    {
 		    var catalog= {
 		    SKU : req.body.sku, 
@@ -603,7 +610,7 @@ app.get("/home",function(req,res){
 	            }
 	        });		
 	    });
-		
+
 	    app.get("/productattr",function(req,res){
 	        res.sendfile("./productattr.html"); 
         });
@@ -640,6 +647,18 @@ app.get("/home",function(req,res){
 		        }
 	        });
 	    });
+
+        app.get("/updateprice", function (req, res){
+	        res.sendfile("./updateprice.html"); 
+        });
+        
+        app.get("/manageqty", function (req, res){
+	        res.sendfile("./manageqty.html"); 
+        }); 
+		
+	    
+		
+	    
 		
 	    app.post("/updateprice" , function(req,res)	
 	    {
@@ -674,48 +693,41 @@ app.get("/home",function(req,res){
 	    });
 	
 	    app.get("/viewOrders",function(req,res){
-	        mysql.query('select b.Order_ID, b.Seq_num, b.Product_ID, b.QTY, b.Price, a.order_date, a.Order_Status ,a.Return_Flag from ecommerce_project.order a, line_items b where a.Order_ID=b.Order_ID;', function(err, rows, fields)
-            {       
-		        if (err)
-                    throw err;
-	            else
-                {
-		            console.log('no of records is '+rows.length);
-                    JSON.stringify(rows);
-				    var htmlStr="";
-				    for(i=0;i<rows.length;i++)
-				    {
-					    htmlStr+="<tr> <td>"  +rows[i].Order_ID +"</td> <td>"  + rows[i].Seq_num + "</td> <td>" +rows[i].Product_ID  + "</td> <td> " +rows[i].QTY +   "</td> <td> " +rows[i].Price +   "</td> <td> " +rows[i].order_date +  " </td> <td> " +rows[i].Order_Status+ " </td> <td> "  +rows[i].Return_Flag+ " </td></tr>";	
-					    console.log(rows[i].Name);			
-				    }
-				    res.writeHead(200, {"Content-Type": "text/html"});  
-				    res.write("<html> <head>  <link href='/css/cover.css' type='text/css' rel='stylesheet'> </head><body> <form  action ='/addProductsToCart' method= post> <table border='1'> <tr> <th> Order_ID </th> <th> Seq_num </th> <th> Product_ID </th> <th> QTY </th> <th> Price </th> <th> order_date </th> <th> Order_Status </th> <th> Return_Flag </th></tr>" +htmlStr +"</tr> </table></form> </body> </html>"); 
-				    res.end();
-                } 
-	        });
+
+	    	res.sendfile("./viewOrders.html");
+
+	    	app.get("/viewOrdersLoad",function(req,res){
+	    		        	        mysql.query('select b.Order_ID, b.Seq_num, b.Product_ID, b.QTY, b.Price, a.order_date, a.Order_Status ,a.Return_Flag from ecommerce_project.order a, line_items b where a.Order_ID=b.Order_ID;', function(err, rows, fields)
+	    		                    {       
+	    		        		        if (err)
+	    		                            throw err;
+	    		        	            else
+	    		                        {
+	    		        		            console.log('no of records is '+rows.length);
+	    		                            res.type('text/plain');
+	    		                            res.json(rows);
+	    		                            res.end();
+	    		                        } 
+	    		        	        }); 
+	    			});// results of displaying viewOrders done 
 	    });
 	
 		app.get("/updateShipments",function(req,res){	
-	        mysql.query('select * from shipment', function(err, rows, fields)
-            {       
-		        if (err)
-                    throw err;
-	            else
-                {
-		            console.log('no of records is '+rows.length);
-                    JSON.stringify(rows);
-				    var htmlStr="";
-				    for(i=0;i<rows.length;i++)
-				    {					
-					    htmlStr+="<tr> <td> <input type='checkbox' name='shipmentUpdate' value='" +rows[i].Shipment_ID +"'/> </td><td>"  +rows[i].Shipment_ID +"</td> <td>"  + rows[i].Order_ID + "</td> <td>" +rows[i].Product_ID  + "</td> <td> " +rows[i].Ship_Status +  " </td></tr>";					
-					    console.log(rows[i].Name);									
-				    }
-				    res.writeHead(200, {"Content-Type": "text/html"});  
-				    res.write("<html> <head>  <link href='/css/cover.css' type='text/css' rel='stylesheet'> </head><body> <form  action ='/shipStatus' method= post> <table border='1'> <tr> <th> Select </th> <th> Shipment_ID </th> <th> Order_ID </th> <th> Product_ID </th> <th> Ship_Status </th> </tr>" +htmlStr +"</tr> <tr> <td> <select name='shipStatus' > <option value='pack'>pack</option><option value='ship'>ship</option></select></td><td colspan='4'> <input type='submit' name='update_shipment' value='Update Ship Status'/> </td> </tr> </table></form> </body> </html>"); 
-				    res.end();        
-                } 
-	        });
-		
+
+			res.sendfile("./updateShipments.html");
+			app.get("/displayCartLoad",function(req,res){
+				        mysql.query('select * from shipment', function(err, rows, fields){
+				            if (err)
+				                throw err;
+					        else
+				            {
+							    console.log('no of records is '+rows.length);
+							    res.type('text/plain');
+								res.json(rows);
+				                res.end();
+						    }
+				    	});  
+			});// results of displaying cart done 
 		    app.post("/shipStatus",function(req,res){
 				var checked=req.body.shipmentUpdate;
 				var shipState= req.body.shipStatus; 

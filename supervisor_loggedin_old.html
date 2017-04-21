@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../../favicon.ico">
+
+    <title>Happy Shopping !! </title>
+
+    <!-- Custom styles for this template -->
+    <link href="/css/cover.css" type="text/css" rel="stylesheet">
+    <style> 
+    input[type=text] {
+    width: 250px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    background-image: url('searchicon.png');
+    background-position: 10px 10px; 
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 40px;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+    }
+
+input[type=text]:focus {
+    width: 100%;
+}
+</style>
+<script>
+function getUserName()
+{
+alert("function");
+var user= {{sess.username}};
+var uname = 
+var display = "welcome "+user;
+document.getElementById("welcome").innerHTML = display;
+}
+</script>
+  </head>
+
+  <body onload= "getUserName()">
+  <form action = "/supervisor_loggedin" method = get>
+
+     <table align ="center">   
+ <tr> 
+ <td> <img align="left" src="/images/icon.jpg" style="width:90px;height:80px" ;>   </td>
+ <td> <h2>Just Click </h2> <h4> <i> - Shop as simple as that </i> </h4> </td> 
+ 
+    </tr> </table>
+            <p  id ="welcome" >  <h3  class="masthead-brand">   </h3> </p>
+              <nav>
+               <!-- <ul class="nav masthead-nav"> -->
+				<ul class="main-navigation" >
+				  <li><a href="/addproducts">Add Products</a></li>
+                  <li><a href="/updateprice">Update Price</a></li>
+				  <li><a href="/manageqty">Manage Stock</a></li>
+				  <li><a href="/viewOrders">View Orders</a></li>
+				  <li><a href="/updateShipments">Set Ship Status</a></li>	
+				  <li><a href="/home">Logout</a></li>				  
+				</ul>
+              </nav>
+		
+            </div>
+          </div>
+	
+	
+	
+          <div class="inner cover">
+	   <div class="center">
+            <h3 class="cover-heading">Online Shopping</h3>
+	    <input type="text" name="search" placeholder="Search products....."></input>
+            <p class="lead"> Site Under Consturction....</p>
+            
+              
+            </p>
+          </div> </div>
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p> site by team#3.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    </form>
+  </body>
+</html>
