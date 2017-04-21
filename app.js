@@ -612,7 +612,7 @@ app.get("/home",function(req,res){
 	    });
 
 	    app.get("/productattr",function(req,res){
-	        res.sendfile("./productattr.html"); 
+	        res.sendfile("./productAttr.html"); 
         });
 
         app.post("/productattr" , function(req,res)	
